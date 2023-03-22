@@ -13,6 +13,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.exceptions import LineBotApiError
+from selenium.webdriver.chrome.options import Options
 import subprocess
 
 logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
@@ -38,8 +39,10 @@ prev_post_path = 'prev_post.pickle'
 app = Flask(__name__)
 
 def main():
+    chrome_options = Options()
+    chrome_options.add_argument('--headless')
     # Instantiate a new WebDriver object and navigate to Facebook:
-    driver = webdriver.Chrome('../chromedriver')  # Replace with the appropriate driver
+    driver = webdriver.Chrome('./chromedriver', chrome_options=chrome_options)  # Replace with the appropriate driver
     driver.get('https://www.facebook.com/')
     driver.implicitly_wait(5)
 
