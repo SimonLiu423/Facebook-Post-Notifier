@@ -19,6 +19,7 @@ import subprocess
 logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                     format='[%(asctime)s %(levelname)-8s] %(message)s',
                     datefmt='%Y%m%d %H:%M:%S',
+					encoding='utf-8',
                     )
 
 with open('config.yaml', 'r') as file:
