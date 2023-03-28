@@ -1,5 +1,7 @@
 config.yaml
-log.txt
-.idea/
+config.yaml.encrypted
 chromedriver
+log.txt
+utils/crypto/encrypt.py
+.idea/
 venv/

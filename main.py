@@ -15,15 +15,15 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.exceptions import LineBotApiError
 from selenium.webdriver.chrome.options import Options
 import subprocess
+from utils.crypto.decrypt import decrypt
 
 logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                     format='[%(asctime)s %(levelname)-8s] %(message)s',
                     datefmt='%Y%m%d %H:%M:%S',
-					encoding='utf-8',
+                    encoding='utf-8',
                     )
 
-with open('config.yaml', 'r') as file:
-    config = yaml.safe_load(file)
+config = yaml.safe_load(decrypt('config.yaml.encrypted'))
 
 account = config['credentials']['account']
 password = config['credentials']['password']
@@ -38,6 +38,7 @@ prev_post_path = 'prev_post.pickle'
 # os.environ['USER_ID'] = user_id
 
 app = Flask(__name__)
+
 
 def main():
     chrome_options = Options()
