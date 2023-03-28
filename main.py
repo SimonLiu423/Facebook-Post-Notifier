@@ -16,6 +16,7 @@ from linebot.exceptions import LineBotApiError
 from selenium.webdriver.chrome.options import Options
 import subprocess
 from utils.crypto.decrypt import decrypt
+import sys
 
 logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                     format='[%(asctime)s %(levelname)-8s] %(message)s',
@@ -23,7 +24,13 @@ logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                     encoding='utf-8',
                     )
 
-config = yaml.safe_load(decrypt('config.yaml.encrypted'))
+decrypted_data = decrypt('config.yaml.encrypted')
+try:
+    config = yaml.safe_load(decrypted_data)
+except yaml.reader.ReaderError:
+    logging.error("YAML failed to load, could be wrong password")
+    print("Wrong password.")
+    sys.exit()
 
 account = config['credentials']['account']
 password = config['credentials']['password']
