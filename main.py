@@ -38,7 +38,7 @@ cred = decrypt_yaml('credentials.yaml.encrypted')
 access_token = cred['line_bot']['channel_access_token']
 fb_acc = cred['fb_cred']['account']
 fb_pass = cred['fb_cred']['password']
-group_id = cred['receivers']['my_id']
+group_id = cred['receivers']['group_id']
 
 # Load configs
 with open('config.yaml') as f:
@@ -48,7 +48,7 @@ url = config['url']
 line_bot_api = LineBotApi(access_token)
 prev_post_path = 'prev_post.pickle'
 
-keywords = ['免費', '便當', '餐盒']
+keywords = ['免費', '便當', '餐盒', '三明治', '飯糰', '剩下', '多的', '發不完']
 
 
 def main():
