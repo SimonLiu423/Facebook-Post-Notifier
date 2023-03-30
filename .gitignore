@@ -1,5 +1,8 @@
 config.yaml
 config.yaml.encrypted
+credentials.yaml
+credentials.yaml.encrypted
+
 chromedriver
 log.txt
 utils/crypto/encrypt.py

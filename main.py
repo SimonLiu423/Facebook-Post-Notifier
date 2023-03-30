@@ -2,19 +2,16 @@ import os.path
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 import time
 import pickle
 import logging
 import yaml
-from flask import Flask, request, abort
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.exceptions import LineBotApiError
 from selenium.webdriver.chrome.options import Options
-import subprocess
+from selenium.webdriver.common.keys import Keys
 from utils.crypto.decrypt import decrypt
 import sys
 
@@ -24,27 +21,34 @@ logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                     encoding='utf-8',
                     )
 
-decrypted_data = decrypt('config.yaml.encrypted')
-try:
-    config = yaml.safe_load(decrypted_data)
-except yaml.reader.ReaderError:
-    logging.error("YAML failed to load, could be wrong password")
-    print("Wrong password.")
-    sys.exit()
 
-account = config['credentials']['account']
-password = config['credentials']['password']
-channel_access_token = config['LineBot']['channel_access_token']
-user_id = config['Line']['user_id']
+def decrypt_yaml(path):
+    decrypted_data = decrypt(path)
+    try:
+        yaml_data = yaml.safe_load(decrypted_data)
+        return yaml_data
+    except yaml.reader.Reader:
+        logging.error("YAML failed to load, could be wrong password")
+        print("Wrong password.")
+        sys.exit()
 
-line_bot_api = LineBotApi(channel_access_token)
-# handler = WebhookHandler(config['LineBot']['channel_secret'])
+
+# FB & Line bot credentials
+cred = decrypt_yaml('credentials.yaml.encrypted')
+access_token = cred['line_bot']['channel_access_token']
+fb_acc = cred['fb_cred']['account']
+fb_pass = cred['fb_cred']['password']
+group_id = cred['receivers']['my_id']
+
+# Load configs
+with open('config.yaml') as f:
+    config = yaml.safe_load(f)
+url = config['url']
+
+line_bot_api = LineBotApi(access_token)
 prev_post_path = 'prev_post.pickle'
 
-# os.environ["CHANNEL_ACCESS_TOKEN"] = channel_access_token
-# os.environ['USER_ID'] = user_id
-
-app = Flask(__name__)
+keywords = ['免費', '便當', '餐盒']
 
 
 def main():
@@ -58,8 +62,8 @@ def main():
     # Login to Facebook
     acc_input = driver.find_element(By.NAME, 'email')
     passwd_input = driver.find_element(By.NAME, 'pass')
-    acc_input.send_keys(account)
-    passwd_input.send_keys(password)
+    acc_input.send_keys(fb_acc)
+    passwd_input.send_keys(fb_pass)
     login_button = driver.find_element(By.NAME, 'login')
     login_button.click()
 
@@ -67,9 +71,9 @@ def main():
     time.sleep(1)
 
     # Navigate to group's page
-    group_name = 'NCKUhouse'
-    group_url = f'https://www.facebook.com/groups/{group_name}?sorting_setting=CHRONOLOGICAL_LISTINGS'
-    driver.get(group_url)
+    global url
+    url = url + '?sorting_setting=CHRONOLOGICAL_LISTINGS'
+    driver.get(url)
 
     if not os.path.exists(prev_post_path):
         with open(prev_post_path, 'wb') as f:
@@ -79,12 +83,18 @@ def main():
         prev_post_context = pickle.load(f)
 
     while True:
-        # Get the number of posts
-        posts = driver.find_elements(By.XPATH, '//div[@class="x1yztbdb x1n2onr6 xh8yej3 x1ja2u2z"]')
-        current_post_count = len(posts)
+        newest_post = driver.find_element(By.XPATH, '//*[@data-ad-preview="message"]')
+        post_context = newest_post.find_elements(By.XPATH, './div/div/span/div/div')
 
-        newest_post = driver.find_elements(By.XPATH, '//*[@data-ad-preview="message"]/div/div/span/div/div')
-        context = '\n'.join(list(map(lambda x: x.text, newest_post)))
+        try:
+            more = post_context[-1].find_element(By.XPATH, './div')
+            more.send_keys(Keys.RETURN)
+            logging.info('Expanding post')
+        except:
+            logging.info("No need to expand post")
+
+        post_context = newest_post.find_elements(By.XPATH, './div/div/span/div/div')
+        context = '\n'.join(list(map(lambda x: x.text, post_context)))
         logging.info('Newest context:\n' + context)
 
         if prev_post_context != context:
@@ -93,19 +103,19 @@ def main():
             with open(prev_post_path, 'wb') as f:
                 pickle.dump(context, f)
 
-            # os.environ["LINE_PUSH_CONTEXT"] = str(context.encode('unicode_escape'))
-            # TODO: Push preview context to chat
-            push_message = '成大租屋 嗷ㄨ嗷ㄨ 有新貼文！\n{}\n\n'.format(group_url) + context
-            try:
-                logging.info('Sending push message...')
-                line_bot_api.push_message(user_id, TextSendMessage(text=push_message))
-            except LineBotApiError as e:
-                logging.error(e)
+            if any(kw in context for kw in keywords):
+                push_message = '你各位蹭飯啦！！！\n\n' + context
+                try:
+                    logging.info('Sending push message...')
+                    line_bot_api.push_message(group_id, TextSendMessage(text=push_message))
+                except LineBotApiError as e:
+                    logging.error(e)
 
             # subprocess.call(["./line_push.sh"])
 
         logging.info("Refreshing page...")
         driver.refresh()
+        time.sleep(2)
 
 
 if __name__ == '__main__':
