@@ -48,7 +48,7 @@ url = config['url']
 line_bot_api = LineBotApi(access_token)
 prev_post_path = 'prev_post.pickle'
 
-keywords = ['免費', '便當', '餐盒', '三明治', '飯糰', '剩下', '多的', '發不完']
+keywords = ['便當', '餐盒', '三明治', '飯糰', '剩下', '多的', '發不完']
 
 
 def main():
