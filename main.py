@@ -83,8 +83,11 @@ def main():
         prev_post_context = pickle.load(f)
 
     while True:
-        newest_post = driver.find_element(By.XPATH, '//*[@data-ad-preview="message"]')
-        post_context = newest_post.find_elements(By.XPATH, './div/div/span/div/div')
+        try:
+            newest_post = driver.find_element(By.XPATH, '//*[@data-ad-preview="message"]')
+            post_context = newest_post.find_elements(By.XPATH, './div/div/span/div/div')
+        except:
+            logging.error('ERROR FETCHING POST')
 
         try:
             more = post_context[-1].find_element(By.XPATH, './div')
@@ -93,9 +96,12 @@ def main():
         except:
             logging.info("No need to expand post")
 
-        post_context = newest_post.find_elements(By.XPATH, './div/div/span/div/div')
-        context = '\n'.join(list(map(lambda x: x.text, post_context)))
-        logging.info('Newest context:\n' + context)
+        try:
+            post_context = newest_post.find_elements(By.XPATH, './div/div/span/div/div')
+            context = '\n'.join(list(map(lambda x: x.text, post_context)))
+            logging.info('Newest context:\n' + context)
+        except:
+            logging.error('ERROR FETCHING POST')
 
         if prev_post_context != context:
             logging.info("IT'S A NEW POST!")
