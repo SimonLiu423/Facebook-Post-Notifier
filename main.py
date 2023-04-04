@@ -121,7 +121,7 @@ def main():
 
         logging.info("Refreshing page...")
         driver.refresh()
-        time.sleep(2)
+        time.sleep(20)
 
 
 if __name__ == '__main__':
