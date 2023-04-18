@@ -19,7 +19,7 @@ import sys
 logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                     format='[%(asctime)s %(levelname)-8s] %(message)s',
                     datefmt='%Y%m%d %H:%M:%S',
-                    # encoding='utf-8',
+                    encoding='utf-8',
                     )
 
 
@@ -49,7 +49,7 @@ url = config['url']
 line_bot_api = LineBotApi(access_token)
 prev_post_id_path = 'prev_post.pickle'
 
-keywords = ['便當', '餐盒', '三明治', '飯糰', '剩下', '多的', '發不完']
+keywords = ['便當', '餐盒', '三明治', '飯糰', '披薩', '多的', '發不完']
 
 
 def main():
