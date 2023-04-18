@@ -84,6 +84,7 @@ def main():
         prev_post_id = pickle.load(f)
 
     while True:
+        logging.info("\n")
         logging.info("Refreshing page...")
         driver.refresh()
         time.sleep(20)
@@ -94,6 +95,32 @@ def main():
         except:
             logging.error('ERROR FETCHING POST')
             continue
+
+        try:
+            ac = ActionChains(driver)
+            post_url = newest_post.find_element(By.XPATH,
+                                                '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
+            ac.move_to_element(post_url).perform()
+            post_url = newest_post.find_element(By.XPATH,
+                                                '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
+            post_url = post_url.get_attribute('href').split('/?')[0]
+            post_id = post_url.split('/')[-1]
+            logging.info("Post id: {}".format(post_id))
+        except:
+            logging.info("href not found, trying another one")
+            try:
+                ac = ActionChains(driver)
+                post_url = newest_post.find_element(By.XPATH,
+                                                    '../../../div[2]/div/div[2]/div/div[2]/span/span/span[4]/span/a')
+                ac.move_to_element(post_url).perform()
+                post_url = newest_post.find_element(By.XPATH,
+                                                    '../../../div[2]/div/div[2]/div/div[2]/span/span/span[4]/span/a')
+                post_url = post_url.get_attribute('href').split('/?')[0]
+                post_id = post_url.split('/')[-1]
+                logging.info("Post id: {}".format(post_id))
+            except:
+                logging.error("ERROR FETCHING POST URL, ID")
+                continue
 
         try:
             more = post_context[-1].find_element(By.XPATH, './div')
@@ -111,15 +138,12 @@ def main():
             continue
 
         try:
-            ac = ActionChains(driver)
-            post_url = newest_post.find_element(By.XPATH, '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
-            ac.move_to_element(post_url).perform()
-            post_url = newest_post.find_element(By.XPATH, '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
-            post_url = post_url.get_attribute('href').split('/?')[0]
-            post_id = post_url.split('/')[-1]
-            logging.info("Post id: {}".format(post_id))
+            market_info = newest_post.find_element(By.XPATH,
+                                                   '../../div[2]/div[1]/div/a[2]/div[1]/div/div[2]/span/span/div')
+            market_info = market_info.text
+            logging.info("Market info: {}".format(market_info))
         except:
-            logging.error("ERROR FETCHING POST URL, ID")
+            logging.error("ERROR FETCHING MARKET INFO")
             continue
 
         if prev_post_id != post_id:
@@ -128,8 +152,8 @@ def main():
             with open(prev_post_id_path, 'wb') as f:
                 pickle.dump(post_id, f)
 
-            if any(kw in post_context for kw in keywords):
-                push_message = '你各位蹭飯啦！！！\n\n' + post_url + '\n' + context
+            if any(kw in post_context for kw in keywords) or any(kw in market_info for kw in keywords):
+                push_message = '你各位蹭飯啦！！！\n\n' + post_url + '\n' + context + '\n----------\n' + market_info
                 try:
                     logging.info('Sending push message...')
                     line_bot_api.push_message(group_id, TextSendMessage(text=push_message))
@@ -137,7 +161,6 @@ def main():
                     logging.error(e)
 
             # subprocess.call(["./line_push.sh"])
-
 
 
 if __name__ == '__main__':
