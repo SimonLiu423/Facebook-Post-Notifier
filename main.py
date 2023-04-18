@@ -12,13 +12,14 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 from linebot.exceptions import LineBotApiError
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from utils.crypto.decrypt import decrypt
 import sys
 
 logging.basicConfig(level=logging.INFO, filename='log.txt', filemode='w',
                     format='[%(asctime)s %(levelname)-8s] %(message)s',
                     datefmt='%Y%m%d %H:%M:%S',
-                    encoding='utf-8',
+                    # encoding='utf-8',
                     )
 
 
@@ -46,7 +47,7 @@ with open('config.yaml') as f:
 url = config['url']
 
 line_bot_api = LineBotApi(access_token)
-prev_post_path = 'prev_post.pickle'
+prev_post_id_path = 'prev_post.pickle'
 
 keywords = ['便當', '餐盒', '三明治', '飯糰', '剩下', '多的', '發不完']
 
@@ -75,12 +76,12 @@ def main():
     url = url + '?sorting_setting=CHRONOLOGICAL_LISTINGS'
     driver.get(url)
 
-    if not os.path.exists(prev_post_path):
-        with open(prev_post_path, 'wb') as f:
+    if not os.path.exists(prev_post_id_path):
+        with open(prev_post_id_path, 'wb') as f:
             pickle.dump('', f)
 
-    with open(prev_post_path, 'rb') as f:
-        prev_post_context = pickle.load(f)
+    with open(prev_post_id_path, 'rb') as f:
+        prev_post_id = pickle.load(f)
 
     while True:
         try:
@@ -103,14 +104,25 @@ def main():
         except:
             logging.error('ERROR FETCHING POST')
 
-        if prev_post_context != context:
-            logging.info("IT'S A NEW POST!")
-            prev_post_context = context
-            with open(prev_post_path, 'wb') as f:
-                pickle.dump(context, f)
+        try:
+            ac = ActionChains(driver)
+            post_url = newest_post.find_element(By.XPATH, '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
+            ac.move_to_element(post_url).perform()
+            post_url = newest_post.find_element(By.XPATH, '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
+            post_url = post_url.get_attribute('href').split('/?')[0]
+            post_id = post_url.split('/')[-1]
+            logging.info("Post id: {}".format(post_id))
+        except:
+            logging.error("ERROR FETCHING POST URL, ID")
 
-            if any(kw in context for kw in keywords):
-                push_message = '你各位蹭飯啦！！！\n\n' + context
+        if prev_post_id != post_id:
+            logging.info("IT'S A NEW POST!")
+            prev_post_id = post_id
+            with open(prev_post_id_path, 'wb') as f:
+                pickle.dump(post_id, f)
+
+            if any(kw in post_context for kw in keywords):
+                push_message = '你各位蹭飯啦！！！\n\n' + post_url + '\n' + context
                 try:
                     logging.info('Sending push message...')
                     line_bot_api.push_message(group_id, TextSendMessage(text=push_message))
