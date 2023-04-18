@@ -84,11 +84,16 @@ def main():
         prev_post_id = pickle.load(f)
 
     while True:
+        logging.info("Refreshing page...")
+        driver.refresh()
+        time.sleep(20)
+
         try:
             newest_post = driver.find_element(By.XPATH, '//*[@data-ad-preview="message"]')
             post_context = newest_post.find_elements(By.XPATH, './div/div/span/div/div')
         except:
             logging.error('ERROR FETCHING POST')
+            continue
 
         try:
             more = post_context[-1].find_element(By.XPATH, './div')
@@ -103,6 +108,7 @@ def main():
             logging.info('Newest context:\n' + context)
         except:
             logging.error('ERROR FETCHING POST')
+            continue
 
         try:
             ac = ActionChains(driver)
@@ -114,6 +120,7 @@ def main():
             logging.info("Post id: {}".format(post_id))
         except:
             logging.error("ERROR FETCHING POST URL, ID")
+            continue
 
         if prev_post_id != post_id:
             logging.info("IT'S A NEW POST!")
@@ -131,9 +138,6 @@ def main():
 
             # subprocess.call(["./line_push.sh"])
 
-        logging.info("Refreshing page...")
-        driver.refresh()
-        time.sleep(20)
 
 
 if __name__ == '__main__':
