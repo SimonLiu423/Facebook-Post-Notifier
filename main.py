@@ -140,11 +140,15 @@ def main():
         try:
             market_info = newest_post.find_element(By.XPATH,
                                                    '../../div[2]/div[1]/div/a[2]/div[1]/div/div[2]/span/span/div')
-            market_info = market_info.text
-            logging.info("Market info: {}".format(market_info))
         except:
-            logging.error("ERROR FETCHING MARKET INFO")
-            continue
+            try:
+                market_info = newest_post.find_element(By.XPATH,
+                                                       '../../div[2]/div[1]/div/a/div[1]/div/div[2]/span/span/div')
+            except:
+                logging.error("ERROR FETCHING MARKET INFO")
+                continue
+        market_info = market_info.text
+        logging.info("Market info: {}".format(market_info))
 
         if prev_post_id != post_id:
             logging.info("IT'S A NEW POST!")
