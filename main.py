@@ -1,3 +1,5 @@
+#!/home/simon/line-instant-notifier/venv/bin/python3
+
 import os.path
 
 from selenium import webdriver
