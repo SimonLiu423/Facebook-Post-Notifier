@@ -3,6 +3,7 @@ config.yaml.encrypted
 credentials.yaml
 credentials.yaml.encrypted
 
+*__pycache__/
 chromedriver
 log.txt
 utils/crypto/encrypt.py
