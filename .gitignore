@@ -1,9 +1,9 @@
 config.yaml
-config.yaml.encrypted
+config.yaml.enc
 
+.python-version
 *__pycache__/
 chromedriver
 app.log
-fb_scraper/utils/crypto/encrypt.py
 .idea/
 venv/
