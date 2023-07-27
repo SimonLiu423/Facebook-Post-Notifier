@@ -1,5 +1,4 @@
 PyYAML~=6.0
 selenium~=4.4.3
-Flask~=2.2.3
 line-bot-sdk~=2.4.2
 pycryptodome~=3.17
