@@ -11,6 +11,8 @@ from fb_scraper.utils.crypto.decrypt import decrypt
 from fb_scraper.utils.logger_config import setup_logger
 from fb_scraper.scraper import FacebookScraper, Sort
 
+logger = setup_logger(__name__)
+
 
 def decrypt_yaml(path):
     decrypted_data = decrypt(path)
@@ -18,13 +20,12 @@ def decrypt_yaml(path):
         yaml_data = yaml.safe_load(decrypted_data)
         return yaml_data
     except yaml.reader.Reader:
-        logging.error("YAML failed to load, could be wrong password")
+        logger.error("YAML failed to load, could be wrong password")
         print("Wrong password.")
         sys.exit()
 
 
 if __name__ == '__main__':
-    logger = setup_logger(__name__)
     config = decrypt_yaml('config.yaml.encrypted')
     interval = 10
 
@@ -48,10 +49,10 @@ if __name__ == '__main__':
                                                         listing_text=latest_post['listing_text'])
                 for user in config['receivers']:
                     try:
-                        logging.info('Sending message to {}...'.format(user))
+                        logger.info('Sending message to {}...'.format(user))
                         line_bot_api.push_message(config['receivers']['user'], TextSendMessage(text=push_message))
                     except LineBotApiError as e:
-                        logging.error(e)
+                        logger.error(e)
                         raise e
 
         prev_post_id = latest_post['id']
