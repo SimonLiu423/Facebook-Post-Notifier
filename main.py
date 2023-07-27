@@ -26,7 +26,7 @@ def decrypt_yaml(path):
 
 
 if __name__ == '__main__':
-    config = decrypt_yaml('config.yaml.encrypted')
+    config = decrypt_yaml('config.yaml.enc')
     interval = 10
 
     scraper = FacebookScraper(headless=False)
