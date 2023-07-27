@@ -44,7 +44,7 @@ if __name__ == '__main__':
         if prev_post_id is not None and prev_post_id != latest_post['id']:
             logger.info('NEW POST!')
             if any(kw in latest_post['content'] for kw in keywords) or any(
-                    kw in latest_post['listing'] for kw in keywords):
+                    kw in latest_post['listing_text'] for kw in keywords):
                 logger.info('Keyword found!')
                 push_message = config['message'].format(url=latest_post['url'], content=latest_post['content'],
                                                         listing_text=latest_post['listing_text'])
