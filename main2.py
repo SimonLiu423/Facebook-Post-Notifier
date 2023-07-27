@@ -26,6 +26,7 @@ def decrypt_yaml(path):
 if __name__ == '__main__':
     logger = setup_logger(__name__)
     config = decrypt_yaml('config.yaml.encrypted')
+    interval = 10
 
     scraper = FacebookScraper(headless=False)
     scraper.login(config['fb_cred']['account'], config['fb_cred']['password'])
@@ -54,5 +55,7 @@ if __name__ == '__main__':
                         raise e
 
         prev_post_id = latest_post['id']
+        logger.info(f'Waiting {interval} secs...')
+        time.sleep(interval)
         logger.info('Refreshing page...')
         scraper.to_group(config['group_id'], Sort.CHRONOLOGICAL_LISTINGS)
