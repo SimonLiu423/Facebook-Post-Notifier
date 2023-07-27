@@ -1,11 +1,9 @@
 config.yaml
 config.yaml.encrypted
-credentials.yaml
-credentials.yaml.encrypted
 
 *__pycache__/
 chromedriver
-log.txt
-utils/crypto/encrypt.py
+app.log
+fb_scraper/utils/crypto/encrypt.py
 .idea/
 venv/
