@@ -1,0 +1,19 @@
+fb_cred:
+  account: '<fb_account>'
+  password: '<fb_password>'
+
+line_bot:
+  channel_access_token: '<channel_access_token>'
+
+group_id: '<fb_group_to_scrape>'
+
+keywords:
+  - '<keyword1>'
+  - '<keyword2>'
+  - '<keyword3>'
+
+receivers:
+    <user/group name>: '<user/group's id>'
+    <user/group name>: '<user/group's id>'
+
+message: <message_format>
