@@ -83,7 +83,7 @@ class FacebookScraper:
             self.logger.info('Loaded group page')
 
     def refresh(self):
-        logging.info('Refreshing page...\n')
+        self.logger.info('Refreshing page...\n')
         self.driver.refresh()
 
     def fetch_post(self):
@@ -99,8 +99,7 @@ class FacebookScraper:
             'listing_text': listing_text,
         }
 
-    @staticmethod
-    def get_listing_text(post):
+    def get_listing_text(self, post):
         listing_text = None
         try:
             listing_text = post.find_element(By.XPATH,
@@ -110,26 +109,25 @@ class FacebookScraper:
                 listing_text = post.find_element(By.XPATH,
                                                  '../../div[2]/div[1]/div/a/div[1]/div/div[2]/span/span/div')
             except NoSuchElementException:
-                logging.error("FAILED TO FETCH LISTING TEXT")
+                self.logger.error("FAILED TO FETCH LISTING TEXT")
                 return ''
 
         return listing_text.text
 
-    @staticmethod
-    def get_post_content(post):
+    def get_post_content(self, post):
         post_content = post.find_elements(By.XPATH, './div/div/span/div/div')
         try:
             more = post_content[-1].find_element(By.XPATH, './div')
             more.send_keys(Keys.RETURN)
-            logging.info('Expanding post')
+            self.logger.info('Expanding post')
         except NoSuchElementException:
-            logging.info("No need to expand post")
+            self.logger.info("No need to expand post")
 
         try:
             post_content = post.find_elements(By.XPATH, './div/div/span/div/div')
             content = '\n'.join(list(map(lambda x: x.text, post_content)))
         except NoSuchElementException:
-            logging.error('FAILED TO FETCH POST')
+            self.logger.error('FAILED TO FETCH POST')
         else:
             return content
 
@@ -150,7 +148,7 @@ class FacebookScraper:
                 timestamp = post.find_element(By.XPATH,
                                               '../../../div[2]/div/div[2]/div/div[2]/span/span/span[4]/span/a')
             except NoSuchElementException as e:
-                logging.error('FAILED TO FETCH POST URL')
+                self.logger.error('FAILED TO FETCH POST URL')
                 raise e
 
         post_url = timestamp.get_attribute('href').split('/?')[0]
