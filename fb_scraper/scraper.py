@@ -117,7 +117,7 @@ class FacebookScraper:
                 logging.error("FAILED TO FETCH LISTING TEXT")
                 return ''
 
-        return listing_text
+        return listing_text.text
 
     @staticmethod
     def get_post_content(post):
