@@ -54,6 +54,5 @@ if __name__ == '__main__':
                         raise e
 
         prev_post_id = latest_post['id']
-        scraper.wait(10)
         logger.info('Refreshing page...')
         scraper.to_group(config['group_id'], Sort.CHRONOLOGICAL_LISTINGS)

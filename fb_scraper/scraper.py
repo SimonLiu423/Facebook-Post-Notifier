@@ -86,10 +86,6 @@ class FacebookScraper:
         logging.info('Refreshing page...\n')
         self.driver.refresh()
 
-    def wait(self, sec):
-        self.logger.info(f'Waiting {sec} secs...')
-        self.driver.implicitly_wait(sec)
-
     def fetch_post(self):
         latest_post = self.driver.find_element(By.XPATH, '//*[@data-ad-preview="message"]')
         post_content = self.get_post_content(latest_post)
