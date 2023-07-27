@@ -36,9 +36,12 @@ if __name__ == '__main__':
     prev_post_id = None
     while True:
         latest_post = scraper.fetch_post()
+        logger.info('Latest post:')
+        logger.info(latest_post)
+
         if prev_post_id is not None and prev_post_id != latest_post['id']:
             logger.info('NEW POST!')
-            if any(kw in latest_post['text'] for kw in keywords) or any(
+            if any(kw in latest_post['content'] for kw in keywords) or any(
                     kw in latest_post['listing'] for kw in keywords):
                 push_message = config['message'].format(url=latest_post['url'], content=latest_post['content'],
                                                         listing_text=latest_post['listing_text'])
@@ -51,3 +54,5 @@ if __name__ == '__main__':
                         raise e
 
         prev_post_id = latest_post['id']
+        logger.info('Refreshing page...')
+        scraper.to_group(config['group_id'], Sort.CHRONOLOGICAL_LISTINGS)
