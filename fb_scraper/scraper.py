@@ -153,10 +153,3 @@ class FacebookScraper:
 
         post_url = timestamp.get_attribute('href').split('/?')[0]
         return post_url
-
-
-if __name__ == '__main__':
-    scraper = FacebookScraper(headless=True)
-    scraper.login('***REMOVED***', '***REMOVED***')
-    scraper.to_group(***REMOVED***, Sort.CHRONOLOGICAL_LISTINGS)
-    print(scraper.fetch_post())
