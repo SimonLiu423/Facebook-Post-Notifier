@@ -51,7 +51,7 @@ if __name__ == '__main__':
                 for user in config['receivers']:
                     try:
                         logger.info('Sending message to {}...'.format(user))
-                        line_bot_api.push_message(config['receivers']['user'], TextSendMessage(text=push_message))
+                        line_bot_api.push_message(config['receivers'][user], TextSendMessage(text=push_message))
                     except LineBotApiError as e:
                         logger.error(e)
                         raise e
