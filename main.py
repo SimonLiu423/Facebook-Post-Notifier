@@ -10,6 +10,7 @@ from linebot.exceptions import LineBotApiError
 from fb_scraper.utils.crypto.decrypt import decrypt
 from fb_scraper.utils.logger_config import setup_logger
 from fb_scraper.scraper import FacebookScraper, Sort
+from selenium.common.exceptions import TimeoutException
 
 logger = setup_logger(__name__)
 
@@ -31,12 +32,19 @@ if __name__ == '__main__':
 
     scraper = FacebookScraper(headless=False)
     scraper.login(config['fb_cred']['account'], config['fb_cred']['password'])
-    scraper.to_group(config['group_id'], Sort.CHRONOLOGICAL_LISTINGS)
 
     line_bot_api = LineBotApi(config['line_bot']['channel_access_token'])
     keywords = config['keywords']
     prev_post_id = None
     while True:
+        try:
+            scraper.to_group(config['group_id'], Sort.CHRONOLOGICAL_LISTINGS)
+        except TimeoutException:
+            logger.info(f'Waiting {interval} secs...')
+            time.sleep(interval)
+            logger.info('Refreshing page...')
+            continue
+
         latest_post = scraper.fetch_post()
         logger.info('Latest post:')
         logger.info(latest_post)
@@ -60,4 +68,3 @@ if __name__ == '__main__':
         logger.info(f'Waiting {interval} secs...')
         time.sleep(interval)
         logger.info('Refreshing page...')
-        scraper.to_group(config['group_id'], Sort.CHRONOLOGICAL_LISTINGS)
