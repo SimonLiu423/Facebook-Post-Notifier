@@ -60,7 +60,7 @@ if __name__ == '__main__':
     prev_post_id = None
     while True:
         try:
-            scraper.to_group(config['group_id'], Sort.CHRONOLOGICAL_LISTINGS)
+            scraper.to_group(config['group_id'], sort_type)
         except TimeoutException:
             logger.info(f'Waiting {interval} secs...')
             time.sleep(interval)
