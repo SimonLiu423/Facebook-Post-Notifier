@@ -30,9 +30,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('enc_file', help='Encrypted config file')
     parser.add_argument('type', help='Type of post you wish to scrape, "listing" or "post"')
+    parser.add_argument('-H', '--headless', action='store_true')
     args = parser.parse_args()
 
     sort_type = None
+    headless = args.headless
+
     if args.type == 'listing':
         sort_type = Sort.CHRONOLOGICAL_LISTINGS
     elif args.type == 'post':
@@ -49,7 +52,7 @@ if __name__ == '__main__':
     config = decrypt_yaml(enc_file)
     interval = 10
 
-    scraper = FacebookScraper(headless=False)
+    scraper = FacebookScraper(headless=headless)
     scraper.login(config['fb_cred']['account'], config['fb_cred']['password'])
 
     line_bot_api = LineBotApi(config['line_bot']['channel_access_token'])
