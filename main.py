@@ -20,9 +20,8 @@ def decrypt_yaml(path):
     try:
         yaml_data = yaml.safe_load(decrypted_data)
         return yaml_data
-    except yaml.reader.Reader:
-        logger.error("YAML failed to load, could be wrong password")
-        print("Wrong password.")
+    except yaml.reader.ReaderError:
+        logger.error("YAML failed to load, may be due to incorrect password or invalid YAML format.")
         sys.exit()
 
 
