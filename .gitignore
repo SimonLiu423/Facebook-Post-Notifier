@@ -1,5 +1,5 @@
-config.yaml
-config.yaml.enc
+*.yaml
+*.yaml.enc
 
 .python-version
 *__pycache__/
