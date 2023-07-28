@@ -4,12 +4,9 @@ import getpass
 
 
 def decrypt(encrypted_file):
-    # read the encrypted file contents
     with open(encrypted_file, 'rb') as f:
+        iv = f.read(AES.block_size)
         encrypted_data = f.read()
-
-    # create the decryption key and initialization vector (IV)
-    iv = encrypted_data[:AES.block_size]
 
     passwd = getpass.getpass(prompt="Enter password (16 chars):")
     if len(passwd) > 16:
@@ -20,8 +17,8 @@ def decrypt(encrypted_file):
         print("Password length less than 16, filled with blanks.")
     passwd = bytes(passwd.encode('utf-8'))
 
-    # create the cipher object and decrypt the data
     cipher = AES.new(passwd, AES.MODE_CBC, iv)
-    decrypted_data = cipher.decrypt(encrypted_data[AES.block_size:])
+    decrypted_data = cipher.decrypt(encrypted_data)
+    unpadded_data = decrypted_data[:-decrypted_data[-1]]
 
-    return decrypted_data
+    return unpadded_data
