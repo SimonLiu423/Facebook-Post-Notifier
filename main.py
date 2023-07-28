@@ -27,7 +27,12 @@ def decrypt_yaml(path):
 
 
 if __name__ == '__main__':
-    config = decrypt_yaml('config.yaml.enc')
+    enc_file = sys.argv[1]
+    if not os.path.exists(enc_file):
+        print('File not found.')
+        sys.exit(1)
+
+    config = decrypt_yaml(enc_file)
     interval = 10
 
     scraper = FacebookScraper(headless=False)

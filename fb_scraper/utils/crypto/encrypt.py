@@ -2,6 +2,7 @@ from Crypto.Cipher import AES
 from Crypto.Random import get_random_bytes
 import getpass
 import os
+import sys
 
 
 def pad(data):
@@ -30,6 +31,8 @@ def encrypt_file(file_path, key):
 
 
 if __name__ == "__main__":
+    file_to_encrypt = sys.argv[1]
+
     passwd = getpass.getpass(prompt="Enter password (16 chars):")
     if len(passwd) > 16:
         passwd = passwd[:16]
@@ -39,7 +42,6 @@ if __name__ == "__main__":
         print("Password length less than 16, filled with blanks.")
     passwd = bytes(passwd.encode('utf-8'))
 
-    file_to_encrypt = os.path.abspath(os.path.dirname(__file__) + '/../../../' + 'config.yaml')
     if not os.path.exists(file_to_encrypt):
         print("File not found.")
     else:
