@@ -1,3 +1,4 @@
+import argparse
 import os.path
 import time
 import pickle
@@ -26,7 +27,21 @@ def decrypt_yaml(path):
 
 
 if __name__ == '__main__':
-    enc_file = sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('enc_file', help='Encrypted config file')
+    parser.add_argument('type', help='Type of post you wish to scrape, "listing" or "post"')
+    args = parser.parse_args()
+
+    sort_type = None
+    if args.type == 'listing':
+        sort_type = Sort.CHRONOLOGICAL_LISTINGS
+    elif args.type == 'post':
+        sort_type = Sort.CHRONOLOGICAL
+    else:
+        print('Expected --type "listing" or "post"')
+        sys.exit(1)
+
+    enc_file = args.enc_file
     if not os.path.exists(enc_file):
         print('File not found.')
         sys.exit(1)
