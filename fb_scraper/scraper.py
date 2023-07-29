@@ -137,6 +137,7 @@ class FacebookScraper:
             timestamp = post.find_element(By.XPATH,
                                           '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
             ac.move_to_element(timestamp).perform()
+            self.driver.implicitly_wait(1)
             timestamp = post.find_element(By.XPATH,
                                           '../../../div[2]/div/div[2]/div/div[2]/span/span/span[2]/span/a')
         except NoSuchElementException:
@@ -145,6 +146,7 @@ class FacebookScraper:
                 timestamp = post.find_element(By.XPATH,
                                               '../../../div[2]/div/div[2]/div/div[2]/span/span/span[4]/span/a')
                 ac.move_to_element(timestamp).perform()
+                self.driver.implicitly_wait(1)
                 timestamp = post.find_element(By.XPATH,
                                               '../../../div[2]/div/div[2]/div/div[2]/span/span/span[4]/span/a')
             except NoSuchElementException as e:
