@@ -1,6 +1,6 @@
 import logging
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from fb_scraper.utils.logger_config import setup_logger
 from enum import IntEnum
 from selenium import webdriver
@@ -71,7 +71,13 @@ class FacebookScraper:
                            'TOP_LISTINGS', 'RECENT_LISTING_ACTIVITY',
                            'NEARBY_LISTINGS', 'CHRONOLOGICAL_LISTINGS']
         group_url = self.fb_url + f"groups/{group_id}?sorting_setting={sorting_setting[sort]}"
-        self.driver.get(group_url)
+        while True:
+            try:
+                self.driver.get(group_url)
+            except WebDriverException:
+                self.logger.error('CONNECTION CLOSED, RETRYING...')
+            else:
+                break
 
         wait = WebDriverWait(self.driver, 60)
         try:
