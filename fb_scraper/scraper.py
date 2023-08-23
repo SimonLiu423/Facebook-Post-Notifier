@@ -97,7 +97,7 @@ class FacebookScraper:
         post_content = self.get_post_content(latest_post)
         listing_text = self.get_listing_text(latest_post)
         post_url = self.get_post_url(latest_post)
-        post_id = post_url.split('/')[-1].split('?')[0]
+        post_id = self.get_post_id(post_url)
         return {
             'id': post_id,
             'url': post_url,
@@ -161,3 +161,11 @@ class FacebookScraper:
 
         post_url = timestamp.get_attribute('href').split('/?')[0]
         return post_url
+
+    @staticmethod
+    def get_post_id(post_url):
+        url_split = post_url.split('/')[-1].split('?')
+        if len(url_split) > 1:
+            return None
+        else:
+            return url_split[0]
