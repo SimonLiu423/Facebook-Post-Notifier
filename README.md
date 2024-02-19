@@ -2,6 +2,9 @@
 This project scrapes **latest** facebook listings/posts from groups. If the post contains any keyword desired, 
 it sends a notification to Line users/groups through Line Messaging API.
 
+## Demo
+![alt text](image.png)
+
 ## What you need
 - A Facebook account
 - A Line Messaging API channel access token
