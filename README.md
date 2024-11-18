@@ -62,7 +62,7 @@ You can name your config file anything you like.
 
 ### Encrypt
 Since the config file contains sensitive data, encrypt it before running on cloud services. \
-`python3 fb_scraper/utils/crypto/encryt.py config.yaml` \
+`python3 fb_scraper/utils/crypto/encrypt.py config.yaml` \
 The encoded file will be named `config.yaml.enc`.
 
 ## Start the script
